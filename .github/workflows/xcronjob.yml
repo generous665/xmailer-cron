@@ -4,6 +4,10 @@ on:
     - cron: "*/1 * * * *"  # Runs every 5 minutes
   workflow_dispatch:
 
+  permissions:  # <-- Add this section
+  actions: write
+  contents: read
+
 jobs:
   cron:
     runs-on: ubuntu-latest
