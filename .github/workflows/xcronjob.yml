@@ -2,7 +2,7 @@ name: WordPress Cron
 on:
   schedule:
     - cron: "*/1 * * * *"  # Runs every 5 minutes
-  workflow_dispatch:        # Allows manual runs
+  workflow_dispatch:
 
 jobs:
   cron:
@@ -15,7 +15,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
+          # Remove cache configuration since we don't have package-lock.json
+          # cache: 'npm'
 
       - name: Install dependencies
         run: |
@@ -30,14 +31,13 @@ jobs:
           (async () => {
             try {
               const browser = await puppeteer.launch({
-              executablePath: '/usr/bin/google-chrome',
                 headless: 'new',
                 args: ['--no-sandbox', '--disable-setuid-sandbox']
               });
               const page = await browser.newPage();
               await page.goto('https://xmailer.infy.uk/wp-cron.php', {
                 waitUntil: 'networkidle2',
-                timeout: 120000 
+                timeout: 60000
               });
               await browser.close();
               console.log('Cron executed successfully!');
@@ -50,5 +50,4 @@ jobs:
 
       - name: Notify Healthchecks.io
         run: |
-          curl -fsS -m 10 --retry 5 \
-          https://hc-ping.com/56eb96e2-3f47-457d-96ae-e211691132cb
+          curl -fsS -m 10 --retry 5 https://hc-ping.com/56eb96e2-3f47-457d-96ae-e211691132cb
