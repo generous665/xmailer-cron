@@ -49,4 +49,5 @@ jobs:
 
       - name: Notify Healthchecks.io
         run: |
-          curl -fsS -m 10 --retry 5 https://hc-ping.com/56eb96e2-3f47-457d-96ae-e211691132cb
+          curl -fsS -m 10 --retry 5 \
+          https://hc-ping.com/56eb96e2-3f47-457d-96ae-e211691132cb
