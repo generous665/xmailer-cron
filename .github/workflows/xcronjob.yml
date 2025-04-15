@@ -1,7 +1,7 @@
 name: WordPress Cron
 on:
   schedule:
-    - cron: "*/1 * * * *"  # Runs every 5 minutes
+    - cron: "* * * * *"  # Runs every 5 minutes
   workflow_dispatch:
 
 jobs:
