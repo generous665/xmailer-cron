@@ -1,0 +1,52 @@
+name: WordPress Cron
+on:
+  schedule:
+    - cron: "*/1 * * * *"  # Runs every 5 minutes
+  workflow_dispatch:        # Allows manual runs
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm-dev
+          npm install puppeteer
+
+      - name: Run Cron with Puppeteer
+        run: |
+          node -e "
+          const puppeteer = require('puppeteer');
+          (async () => {
+            try {
+              const browser = await puppeteer.launch({
+                headless: 'new',
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+              });
+              const page = await browser.newPage();
+              await page.goto('https://xmailer.infy.uk/wp-cron.php', {
+                waitUntil: 'networkidle2',
+                timeout: 60000
+              });
+              await browser.close();
+              console.log('Cron executed successfully!');
+            } catch (error) {
+              console.error('Error:', error);
+              process.exit(1);
+            }
+          })();
+          "
+
+      - name: Notify Healthchecks.io
+        run: |
+          curl -fsS -m 10 --retry 5 https://hc-ping.com/56eb96e2-3f47-457d-96ae-e211691132cb
